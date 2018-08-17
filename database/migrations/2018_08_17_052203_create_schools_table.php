@@ -19,6 +19,8 @@ class CreateSchoolsTable extends Migration
             $table->text('address');
             $table->string('phone_number')->nullable();
             $table->string('email_address')->nullable();
+            $table->integer('city_id');
+            $table->integer('students_count');
             $table->timestamps();
         });
     }

@@ -17,7 +17,6 @@ class CreateCitiesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('country_code', 2);
-            $table->integer('school_id');
             $table->timestamps();
         });
     }
