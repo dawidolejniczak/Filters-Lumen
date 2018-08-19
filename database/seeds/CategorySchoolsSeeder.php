@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class CategorySchoolsSeeder extends Seeder
+final class CategorySchoolsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
