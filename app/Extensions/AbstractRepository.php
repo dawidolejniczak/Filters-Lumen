@@ -3,6 +3,7 @@
 namespace App\Extensions;
 
 
+use App\Criteria\CriteriaInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -136,6 +137,18 @@ abstract class AbstractRepository
     public function skip(int $skip): self
     {
         $this->query->skip($skip);
+        return $this;
+    }
+
+    /**
+     * @param CriteriaInterface $criteria
+     * @param mixed ...$params
+     * @return AbstractRepository
+     */
+    public function pushCriteria(CriteriaInterface $criteria, ...$params): self
+    {
+        $this->query = $criteria->apply($this->query, ...$params);
+
         return $this;
     }
 }
