@@ -26,7 +26,7 @@ abstract class AbstractRepository
     /**
      * @return Builder
      */
-    abstract public function newQuery(): Builder;
+    abstract protected function newQuery(): Builder;
 
     /**
      * @return AbstractRepository
