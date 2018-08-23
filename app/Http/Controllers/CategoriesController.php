@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Criteria\FullTextSearchNameCriteria;
 use App\Criteria\SkipLimitCriteria;
 use App\Repository\CategoryRepository;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ final class CategoriesController
     {
         $this
             ->categoryRepository
+            ->pushCriteria(new FullTextSearchNameCriteria(), $request->get('name'))
             ->pushCriteria(new SkipLimitCriteria(), $request->get('offset'), $request->get('limit'));
 
         return $this->categoryRepository->getAll();

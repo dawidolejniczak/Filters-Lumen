@@ -7,7 +7,7 @@ use App\Extensions\AbstractRepository;
 use App\Models\City;
 use Illuminate\Database\Eloquent\Builder;
 
-class CityRepository extends AbstractRepository
+final class CityRepository extends AbstractRepository
 {
     /**
      * @return Builder

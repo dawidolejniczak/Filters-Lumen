@@ -7,7 +7,7 @@ use App\Extensions\AbstractRepository;
 use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 
-class SchoolRepository extends AbstractRepository
+final class SchoolRepository extends AbstractRepository
 {
     /**
      * @return Builder
