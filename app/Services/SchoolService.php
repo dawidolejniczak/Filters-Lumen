@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 
 final class SchoolService
 {
+    const MAX_AMOUNT_PER_PAGE = 25;
+
     /**
      * @var SchoolRepository
      */
@@ -27,9 +29,28 @@ final class SchoolService
 
     /**
      * @param Request $request
-     * @return string
+     * @return array
      */
-    public function getFilteredSchools(Request $request): string
+    public function getFilteredSchools(Request $request): array
+    {
+        $schoolsQuery = $this->_initFilters($request);
+        $schoolsCount = $schoolsQuery->getCount();
+
+        $schoolsQuery = $this->_initFilters($request);
+        $schools = $schoolsQuery->take(self::MAX_AMOUNT_PER_PAGE)->getAll();
+
+        $results = fractal($schools, new SchoolTransformer())->toArray();
+
+        $results['data']['schoolsCount'] = $schoolsCount;
+
+        return $results;
+    }
+
+    /**
+     * @param Request $request
+     * @return SchoolRepository
+     */
+    private function _initFilters(Request $request): SchoolRepository
     {
         if ($request->has('categoriesCodes')) {
             $schools = $this->schoolRepository->whereHas('categories', function (Builder $query) use ($request) {
@@ -49,10 +70,6 @@ final class SchoolService
             $schools = $this->schoolRepository;
         }
 
-        $schools = $schools->getAll();
-
-        $results = fractal($schools, new SchoolTransformer())->toJson();
-
-        return $results;
+        return $schools;
     }
 }

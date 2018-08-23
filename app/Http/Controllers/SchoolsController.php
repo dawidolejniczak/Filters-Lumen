@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 
-use App\Repository\CategoryRepository;
 use App\Repository\SchoolRepository;
 use App\Services\SchoolService;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 final class SchoolsController extends Controller
@@ -29,9 +27,9 @@ final class SchoolsController extends Controller
 
     /**
      * @param Request $request
-     * @return string
+     * @return array
      */
-    public function index(Request $request): string
+    public function index(Request $request): array
     {
         $schools = $this->schoolService->getFilteredSchools($request);
 
