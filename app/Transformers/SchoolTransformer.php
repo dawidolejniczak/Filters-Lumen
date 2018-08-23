@@ -10,6 +10,12 @@ final class SchoolTransformer extends TransformerAbstract
 {
     public function transform(School $school): array
     {
+        $categories = '';
+        foreach ($school->categories()->get() as $category) {
+            $categories = $category->name . ', ';
+        }
+
+        $categories = rtrim($categories, ', ');
         return [
             'id' => $school->id,
             'name' => $this->_cutBack($school->name),
@@ -17,8 +23,8 @@ final class SchoolTransformer extends TransformerAbstract
             'emailAddress' => $this->_cutBack($school->email_address),
             'phoneNumber' => $this->_cutBack($school->phone_number),
             'studentsCount' => $school->students_count,
-            'categories' => implode($school->categories()->get()->toArray(), ','),
-            'city' => $school->city()
+            'categories' => $categories,
+            'city' => $school->city()->first()->name
         ];
     }
 

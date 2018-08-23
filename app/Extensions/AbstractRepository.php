@@ -39,6 +39,20 @@ abstract class AbstractRepository
     }
 
     /**
+     * @param $relation
+     * @param \Closure|null $callback
+     * @param string $operator
+     * @param int $count
+     * @return AbstractRepository
+     */
+    public function whereHas($relation, \Closure $callback = null, $operator = '>=', $count = 1): self
+    {
+        $this->query->whereHas($relation, $callback, $operator, $count);
+
+        return $this;
+    }
+
+    /**
      * @param int $id
      * @return AbstractRepository
      */
@@ -148,6 +162,31 @@ abstract class AbstractRepository
     public function pushCriteria(CriteriaInterface $criteria, ...$params): self
     {
         $this->query = $criteria->apply($this->query, ...$params);
+
+        return $this;
+    }
+
+    /**
+     * @param $relations
+     * @return $this
+     */
+    public function with($relations): self
+    {
+        $this->query->with($relations);
+
+        return $this;
+    }
+
+
+    /**
+     * @param string|array|\Closure $column
+     * @param null $operator
+     * @param null $value
+     * @return AbstractRepository
+     */
+    protected function where($column, $operator = null, $value = null): self
+    {
+        $this->query->orWhere($column, $operator, $value);
 
         return $this;
     }

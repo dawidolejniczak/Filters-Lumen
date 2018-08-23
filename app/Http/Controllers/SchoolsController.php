@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 
+use App\Repository\CategoryRepository;
 use App\Repository\SchoolRepository;
+use App\Services\SchoolService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 final class SchoolsController extends Controller
@@ -11,19 +14,27 @@ final class SchoolsController extends Controller
     /**
      * @var SchoolRepository
      */
-    private $schoolRepository;
+    private $schoolService;
+
 
     /**
      * SchoolsController constructor.
-     * @param SchoolRepository $schoolRepository
+     * @param SchoolService $schoolService
      */
-    public function __construct(SchoolRepository $schoolRepository)
+    public function __construct(SchoolService $schoolService)
     {
-        $this->schoolRepository = $schoolRepository;
+        $this->schoolService = $schoolService;
+
     }
 
-    public function index(Request $request)
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function index(Request $request): string
     {
-        return $this->schoolRepository->getAll();
+        $schools = $this->schoolService->getFilteredSchools($request);
+
+        return $schools;
     }
 }
