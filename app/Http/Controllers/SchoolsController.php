@@ -60,10 +60,7 @@ final class SchoolsController extends Controller
 
             return response()->json($school->toArray());
         } catch (\Exception $exception) {
-            return response()->json([
-                'status' => $exception->getCode(),
-                'message' => $exception->getMessage(),
-            ], $exception->getCode());
+            return $this->respondWithException($exception);
         }
     }
 
@@ -73,15 +70,16 @@ final class SchoolsController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), School::$rules);
+        try {
+            $validator = Validator::make($request->all(), School::$rules);
+            $this->checkValidation($validator);
 
-        if ($validator->fails()) {
-            return $this->respondWithErrorMessage($validator);
+            $school = $this->schoolRepository->create($request->all());
+
+            return response()->json($school->toArray());
+        } catch (\Exception $exception) {
+            return $this->respondWithException($exception);
         }
-
-        $school = $this->schoolRepository->create($request->all());
-
-        return response()->json($school->toArray());
     }
 
 
@@ -92,28 +90,20 @@ final class SchoolsController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $validator = Validator::make($request->all(), School::$rules);
-
-        if ($validator->fails()) {
-            return $this->respondWithErrorMessage($validator);
-        }
-
         try {
+            $validator = Validator::make($request->all(), School::$rules);
+            $this->checkValidation($validator);
+
             $school = $this->schoolRepository->find($id)->getOne();
             if (!$school) {
                 throw new ModelDoesNotExistException();
             }
-
             $school->update($request->all());
-
             $school = $this->schoolRepository->find($id)->getOne();
 
             return response()->json($school->toArray());
         } catch (\Exception $exception) {
-            return response()->json([
-                'status' => $exception->getCode(),
-                'message' => $exception->getMessage(),
-            ], $exception->getCode());
+            return $this->respondWithException($exception);
         }
     }
 
@@ -128,15 +118,11 @@ final class SchoolsController extends Controller
             if (!$school) {
                 throw new ModelDoesNotExistException();
             }
-
             $school->delete();
 
             return response()->json(true);
         } catch (\Exception $exception) {
-            return response()->json([
-                'status' => $exception->getCode(),
-                'message' => $exception->getMessage(),
-            ], $exception->getCode());
+            return $this->respondWithException($exception);
         }
     }
 }

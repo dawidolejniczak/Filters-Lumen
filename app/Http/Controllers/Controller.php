@@ -2,63 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\MissingFieldException;
+use App\Exceptions\ValidationException;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-
     /**
-     * @param $validator
+     * @param \Exception $exception
      * @return JsonResponse
      */
-    protected function respondWithErrorMessage($validator): JsonResponse
-    {
-        $required = $messages = [];
-        $validatorMessages = $validator->errors()->toArray();
-        foreach ($validatorMessages as $field => $message) {
-            if (strpos($message[0], 'required')) {
-                $required[] = $field;
-            }
-
-            foreach ($message as $error) {
-                $messages[] = $error;
-            }
-        }
-
-        if (count($required) > 0) {
-            $fields = implode(', ', $required);
-            $message = "Missing required fields $fields";
-
-            return $this->_respondWithMissingField($message);
-        }
-
-
-        return $this->_respondWithValidationError(implode(', ', $messages));
-    }
-
-
-    /**
-     * @param $message
-     * @return JsonResponse
-     */
-    private function _respondWithMissingField($message): JsonResponse
+    protected function respondWithException(\Exception $exception): JsonResponse
     {
         return response()->json([
-            'status' => 400,
-            'message' => $message,
-        ], 400);
+            'status' => $exception->getCode(),
+            'message' => $exception->getMessage(),
+        ], $exception->getCode());
     }
 
     /**
-     * @param $message
-     * @return JsonResponse
+     * @param Validator $validator
+     * @throws MissingFieldException
+     * @throws ValidationException
      */
-    private function _respondWithValidationError($message): JsonResponse
+    protected function checkValidation(Validator $validator)
     {
-        return response()->json([
-            'status' => 406,
-            'message' => $message,
-        ], 406);
+        if ($validator->fails()) {
+            $required = $messages = [];
+            $validatorMessages = $validator->errors()->toArray();
+            foreach ($validatorMessages as $field => $message) {
+                if (strpos($message[0], 'required')) {
+                    $required[] = $field;
+                }
+
+                foreach ($message as $error) {
+                    $messages[] = $error;
+                }
+            }
+
+            if (count($required) > 0) {
+                $fields = implode(', ', $required);
+                $message = "Missing required fields: $fields";
+
+                throw new MissingFieldException($message);
+            }
+
+            throw new ValidationException(implode(', ', $messages));
+        }
     }
 }
