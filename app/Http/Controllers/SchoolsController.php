@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 
+use App\Exceptions\ModelDoesNotExistException;
+use App\Models\School;
 use App\Repository\SchoolRepository;
 use App\Services\SchoolService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 final class SchoolsController extends Controller
 {
@@ -14,25 +18,125 @@ final class SchoolsController extends Controller
      */
     private $schoolService;
 
+    /**
+     * @var SchoolRepository
+     */
+    private $schoolRepository;
+
 
     /**
      * SchoolsController constructor.
      * @param SchoolService $schoolService
+     * @param SchoolRepository $schoolRepository
      */
-    public function __construct(SchoolService $schoolService)
+    public function __construct(SchoolService $schoolService, SchoolRepository $schoolRepository)
     {
         $this->schoolService = $schoolService;
-
+        $this->schoolRepository = $schoolRepository;
     }
 
     /**
      * @param Request $request
-     * @return array
+     * @return JsonResponse
      */
-    public function index(Request $request): array
+    public function index(Request $request): JsonResponse
     {
         $schools = $this->schoolService->getFilteredSchools($request);
 
-        return $schools;
+        return response()->json($schools);
+    }
+
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function show(int $id): JsonResponse
+    {
+        try {
+            $school = $this->schoolRepository->find($id)->getOne();
+            if (!$school) {
+                throw new ModelDoesNotExistException();
+            }
+
+            return response()->json($school->toArray());
+        } catch (\Exception $exception) {
+            return response()->json([
+                'status' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+            ], $exception->getCode());
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), School::$rules);
+
+        if ($validator->fails()) {
+            return $this->respondWithErrorMessage($validator);
+        }
+
+        $school = $this->schoolRepository->create($request->all());
+
+        return response()->json($school->toArray());
+    }
+
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $validator = Validator::make($request->all(), School::$rules);
+
+        if ($validator->fails()) {
+            return $this->respondWithErrorMessage($validator);
+        }
+
+        try {
+            $school = $this->schoolRepository->find($id)->getOne();
+            if (!$school) {
+                throw new ModelDoesNotExistException();
+            }
+
+            $school->update($request->all());
+
+            $school = $this->schoolRepository->find($id)->getOne();
+
+            return response()->json($school->toArray());
+        } catch (\Exception $exception) {
+            return response()->json([
+                'status' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+            ], $exception->getCode());
+        }
+    }
+
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function delete(int $id): JsonResponse
+    {
+        try {
+            $school = $this->schoolRepository->find($id)->getOne();
+            if (!$school) {
+                throw new ModelDoesNotExistException();
+            }
+
+            $school->delete();
+
+            return response()->json(true);
+        } catch (\Exception $exception) {
+            return response()->json([
+                'status' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+            ], $exception->getCode());
+        }
     }
 }

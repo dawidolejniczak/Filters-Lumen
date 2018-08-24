@@ -177,6 +177,18 @@ abstract class AbstractRepository
         return $this;
     }
 
+    /**
+     * @param array $data
+     * @return Builder|Model
+     */
+    public function create(array $data)
+    {
+        $school = $this->query->create($data);
+        $this->reset();
+
+        return $school;
+    }
+
 
     /**
      * @param string|array|\Closure $column

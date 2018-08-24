@@ -10,7 +10,10 @@ use Illuminate\Http\Request;
 
 final class SchoolService
 {
-    const MAX_AMOUNT_PER_PAGE = 25;
+    /**
+     * @var int
+     */
+    private static $maxAmountPerPage = 25;
 
     /**
      * @var SchoolRepository
@@ -37,7 +40,7 @@ final class SchoolService
         $schoolsCount = $schoolsQuery->getCount();
 
         $schoolsQuery = $this->_initFilters($request);
-        $schools = $schoolsQuery->take(self::MAX_AMOUNT_PER_PAGE)->getAll();
+        $schools = $schoolsQuery->take(self::$maxAmountPerPage)->getAll();
 
         $results = fractal($schools, new SchoolTransformer())->toArray();
 
