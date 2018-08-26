@@ -14,8 +14,9 @@ final class SchoolTransformer extends TransformerAbstract
         foreach ($school->categories()->get() as $category) {
             $categories = $category->name . ', ';
         }
-
         $categories = rtrim($categories, ', ');
+        $city = $school->city()->first();
+
         return [
             'id' => $school->id,
             'name' => $this->_cutBack($school->name),
@@ -24,7 +25,7 @@ final class SchoolTransformer extends TransformerAbstract
             'phoneNumber' => $this->_cutBack($school->phone_number),
             'studentsCount' => $school->students_count,
             'categories' => $categories,
-            'city' => $school->city()->first()->name
+            'city' => $city ? $city : null,
         ];
     }
 

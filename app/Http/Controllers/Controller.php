@@ -19,7 +19,7 @@ class Controller extends BaseController
         return response()->json([
             'status' => $exception->getCode(),
             'message' => $exception->getMessage(),
-        ], $exception->getCode());
+        ], 400);
     }
 
     /**

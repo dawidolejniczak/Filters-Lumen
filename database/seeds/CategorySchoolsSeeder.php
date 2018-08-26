@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\School;
+use App\Models\Category;
 
 final class CategorySchoolsSeeder extends Seeder
 {
@@ -11,8 +13,8 @@ final class CategorySchoolsSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Models\School::class, 100)->create()->each(function (\App\Models\School $school) {
-            $school->categories()->save(factory(\App\Models\Category::class)->make());
+        factory(School::class, 100)->create()->each(function (School $school) {
+            $school->categories()->save(factory(Category::class)->make());
         });
     }
 }

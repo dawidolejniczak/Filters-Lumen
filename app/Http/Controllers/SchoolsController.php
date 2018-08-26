@@ -41,9 +41,14 @@ final class SchoolsController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $schools = $this->schoolService->getFilteredSchools($request);
+        try {
+            $schools = $this->schoolService->getFilteredSchools($request);
+            return response()->json($schools);
 
-        return response()->json($schools);
+        } catch (\Exception $exception) {
+            return $this->respondWithException($exception);
+        }
+
     }
 
     /**

@@ -9,7 +9,7 @@ use App\Repository\CategoryRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-final class CategoriesController
+final class CategoriesController extends Controller
 {
     /**
      * @var CategoryRepository
