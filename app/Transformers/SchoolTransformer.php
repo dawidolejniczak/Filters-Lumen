@@ -8,6 +8,10 @@ use League\Fractal\TransformerAbstract;
 
 final class SchoolTransformer extends TransformerAbstract
 {
+    /**
+     * @param School $school
+     * @return array
+     */
     public function transform(School $school): array
     {
         $categories = '';
@@ -29,7 +33,11 @@ final class SchoolTransformer extends TransformerAbstract
         ];
     }
 
-    private function _cutBack(string $string)
+    /**
+     * @param string $string
+     * @return string
+     */
+    private function _cutBack(string $string): string
     {
         return substr($string, 0, 5) . '*****';
     }

@@ -27,7 +27,7 @@ class Controller extends BaseController
      * @throws MissingFieldException
      * @throws ValidationException
      */
-    protected function checkValidation(Validator $validator)
+    protected function checkValidation(Validator $validator): void
     {
         if ($validator->fails()) {
             $required = $messages = [];
