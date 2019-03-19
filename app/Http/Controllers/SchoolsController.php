@@ -58,10 +58,7 @@ final class SchoolsController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $school = $this->schoolRepository->find($id)->getOne();
-            if (!$school) {
-                throw new ModelDoesNotExistException();
-            }
+            $school = $this->schoolRepository->findOneAndCheckIfExists($id);
 
             return response()->json($school->toArray());
         } catch (\Exception $exception) {
@@ -99,10 +96,8 @@ final class SchoolsController extends Controller
             $validator = Validator::make($request->all(), School::$rules);
             $this->checkValidation($validator);
 
-            $school = $this->schoolRepository->find($id)->getOne();
-            if (!$school) {
-                throw new ModelDoesNotExistException();
-            }
+            $school = $this->schoolRepository->findOneAndCheckIfExists($id);
+
             $school->update($request->all());
             $school = $this->schoolRepository->find($id)->getOne();
 
@@ -119,10 +114,7 @@ final class SchoolsController extends Controller
     public function delete(int $id): JsonResponse
     {
         try {
-            $school = $this->schoolRepository->find($id)->getOne();
-            if (!$school) {
-                throw new ModelDoesNotExistException();
-            }
+            $school = $this->schoolRepository->findOneAndCheckIfExists($id);
             $school->delete();
 
             return response()->json(true);
